@@ -1,0 +1,3 @@
+[submodule "submodule/cuties"]
+	path = submodule/cuties
+	url = https://github.com/oldvers/cuties.git
