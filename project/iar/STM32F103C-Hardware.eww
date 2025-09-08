@@ -3,5 +3,8 @@
     <project>
         <path>$WS_DIR$\..\..\submodule\cuties\project\iar\cuties.ewp</path>
     </project>
+    <project>
+        <path>$WS_DIR$\STM32F103C-Hardware.ewp</path>
+    </project>
     <batchBuild />
 </workspace>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspace>
+    <project>
+        <path>$WS_DIR$\..\..\..\submodule\cuties\project\iar\cuties.ewp</path>
+    </project>
+    <project>
+        <path>$WS_DIR$\..\..\test\hardware_template\project\iar\hardware_template.ewp</path>
+    </project>
+    <project>
+        <path>$WS_DIR$\..\..\..\project\iar\STM32F103C-Hardware.ewp</path>
+    </project>
+    <batchBuild />
+</workspace>
