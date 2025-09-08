@@ -9,5 +9,28 @@
     <project>
         <path>$WS_DIR$\..\..\..\project\iar\STM32F103C-Hardware.ewp</path>
     </project>
-    <batchBuild />
+    <project>
+        <path>$WS_DIR$\..\..\test\exceptions\project\iar\test_exceptions.ewp</path>
+    </project>
+    <batchBuild>
+        <batchDefinition>
+            <name>all</name>
+            <member>
+                <project>cuties</project>
+                <configuration>release</configuration>
+            </member>
+            <member>
+                <project>STM32F103C-Hardware</project>
+                <configuration>release</configuration>
+            </member>
+            <member>
+                <project>hardware_template</project>
+                <configuration>test</configuration>
+            </member>
+            <member>
+                <project>test_exceptions</project>
+                <configuration>test</configuration>
+            </member>
+        </batchDefinition>
+    </batchBuild>
 </workspace>
