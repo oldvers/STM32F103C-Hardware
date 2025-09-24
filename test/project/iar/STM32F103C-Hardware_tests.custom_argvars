@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<iarUserArgVars>
+    <group name="hardware" active="true">
+        <variable>
+            <name>CUTIES_CFG_DIR</name>
+            <value>$WS_DIR$\..\..\..\configuration</value>
+        </variable>
+        <variable>
+            <name>HW_CFG_DIR</name>
+            <value>$WS_DIR$\..\..\..\configuration</value>
+        </variable>
+        <variable>
+            <name>RTT_CFG_DIR</name>
+            <value>$WS_DIR$\..\..\..\configuration</value>
+        </variable>
+    </group>
+</iarUserArgVars>

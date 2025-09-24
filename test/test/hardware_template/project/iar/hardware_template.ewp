@@ -215,8 +215,7 @@
                 </option>
                 <option>
                     <name>CCDefines</name>
-                    <state>STM32F103xB</state>
-                    <state>STM32F10X_MD</state>
+                    <state></state>
                 </option>
                 <option>
                     <name>CCPreprocFile</name>
@@ -341,6 +340,8 @@
                 </option>
                 <option>
                     <name>CCIncludePath2</name>
+                    <state>$HW_CFG_DIR$</state>
+                    <state>$RTT_CFG_DIR$</state>
                     <state>$PROJ_DIR$\..\..\source</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\source</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\source\cmsis\Include</state>
@@ -614,7 +615,7 @@
                 </option>
                 <option>
                     <name>AUserIncludes</name>
-                    <state>$PROJ_DIR$\..\..\..\..\..\submodule\cuties\source\freertos</state>
+                    <state></state>
                 </option>
                 <option>
                     <name>AExtraOptionsCheckV2</name>
