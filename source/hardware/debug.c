@@ -9,7 +9,7 @@
 /* --- Selection of the debug logging output method ------------------------- */
 
 #if !defined(DBG_NONE) && !defined(DBG_RTT) && !defined(DBG_SWO)
-#  error "Define the debug logging output method in the project settings!"
+#  error "Define the debug logging output method!"
 #endif
 
 /* --- Debugger connection state for RTT logger ----------------------------- */
