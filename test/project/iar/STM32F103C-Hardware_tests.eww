@@ -15,6 +15,9 @@
     <project>
         <path>$WS_DIR$\..\..\test\i2c\project\iar\test_i2c.ewp</path>
     </project>
+    <project>
+        <path>$WS_DIR$\..\..\test\spi\project\iar\test_spi.ewp</path>
+    </project>
     <batchBuild>
         <batchDefinition>
             <name>all</name>
@@ -36,6 +39,10 @@
             </member>
             <member>
                 <project>test_i2c</project>
+                <configuration>test</configuration>
+            </member>
+            <member>
+                <project>test_spi</project>
                 <configuration>test</configuration>
             </member>
         </batchDefinition>
