@@ -342,6 +342,7 @@
                     <name>CCIncludePath2</name>
                     <state>$HW_CFG_DIR$</state>
                     <state>$RTT_CFG_DIR$</state>
+                    <state>$PROJ_DIR$\..\..\..\..\..\submodule\cuties\source</state>
                     <state>$PROJ_DIR$\..\..\source</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\source</state>
                     <state>$PROJ_DIR$\..\..\..\..\..\source\cmsis\Include</state>
