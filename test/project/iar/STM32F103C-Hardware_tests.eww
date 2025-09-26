@@ -12,6 +12,9 @@
     <project>
         <path>$WS_DIR$\..\..\test\exceptions\project\iar\test_exceptions.ewp</path>
     </project>
+    <project>
+        <path>$WS_DIR$\..\..\test\i2c\project\iar\test_i2c.ewp</path>
+    </project>
     <batchBuild>
         <batchDefinition>
             <name>all</name>
@@ -29,6 +32,10 @@
             </member>
             <member>
                 <project>test_exceptions</project>
+                <configuration>test</configuration>
+            </member>
+            <member>
+                <project>test_i2c</project>
                 <configuration>test</configuration>
             </member>
         </batchDefinition>

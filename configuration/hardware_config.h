@@ -22,4 +22,10 @@
 #define LED_PORT             GPIOC
 #define LED_PIN              13
 
+/* I2C1: PB6 - SCL, PB7 - SDA */
+#define I2C1_SCL_PORT        GPIOB
+#define I2C1_SCL_PIN         6
+#define I2C1_SDA_PORT        GPIOB
+#define I2C1_SDA_PIN         7
+
 #endif  /* __HARDWARE_CONFIG_H__ */
