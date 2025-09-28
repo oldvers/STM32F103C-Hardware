@@ -5,7 +5,7 @@
 #include "system.h"
 #include "i2c.h"
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 
 typedef struct I2C_Context_s
 {
@@ -19,13 +19,13 @@ typedef struct I2C_Context_s
   U32                Index;
 } I2C_Context_t, * I2C_Context_p;
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 
 #define I2C_RW_MASK  ((U8)0xFE)
 #define I2C_RD       ((U8)1)
 #define I2C_WR       ((U8)0)
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 
 static I2C_Context_t gI2CCtx[I2CS_COUNT] =
 {
@@ -51,7 +51,7 @@ static I2C_Context_t gI2CCtx[I2CS_COUNT] =
   },
 };
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Initializes the I2C peripheral
  *  @param pI2CInstance - Pointer to the I2C hardware
  *  @return None
@@ -77,7 +77,7 @@ static void i2c_Init(I2C_TypeDef * pI2cInstance)
   pI2cInstance->CR1 |= I2C_CR1_PE;
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Calls the callback function and disables the interrupts
  *  @param pContext - Pointer to the I2C context
  *  @param aResult - Result of the I2C transaction
@@ -93,7 +93,7 @@ static void i2c_Complete(I2C_Context_t * pContext, FW_RESULT aResult)
   pContext->HW->CR2 &= ~(I2C_CR2_ITEVTEN | I2C_CR2_ITBUFEN | I2C_CR2_ITERREN);
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Handles the I2C interrupts
  *  @param pContext - Pointer to the I2C context
  *  @return None
@@ -168,7 +168,7 @@ static void i2c_Irq(I2C_Context_t * pContext)
   }
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Handles the I2C error interrupts
  *  @param pContext - Pointer to the I2C context
  *  @return None
@@ -189,7 +189,7 @@ static void i2c_Err(I2C_Context_t * pContext)
   pContext->HW->CR1 |= I2C_CR1_STOP;
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Initializes the I2C peripheral
  *  @param aI2C - A number of I2C peripheral
  *  @param pCbComplete - Pointer to the callback function
@@ -234,7 +234,7 @@ void I2C_Init(I2C_t aI2C, I2C_CbComplete_t pCbComplete)
   i2c_Init(gI2CCtx[aI2C].HW);
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Starts the I2C master write transaction
  *  @param aI2C - A number of the I2C peripheral
  *  @param aAdr - Address of the I2C device
@@ -261,7 +261,7 @@ void I2C_MWr(I2C_t aI2C, U8 aAdr, U8 * pTx, U8 txSize)
   pCtx->HW->CR1 |= I2C_CR1_START;
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief I2C interrupt handler
  *  @param aI2C - A number of the I2C peripheral
  *  @return None
@@ -272,7 +272,7 @@ void I2C_IrqHandler(I2C_t aI2C)
   i2c_Irq(&gI2CCtx[aI2C]);
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief I2C error interrupt handler
  *  @param aI2C - A number of the I2C peripheral
  *  @return None
@@ -283,7 +283,7 @@ void I2C_IrqError(I2C_t aI2C)
   i2c_Err(&gI2CCtx[aI2C]);
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Starts the I2C master read transaction
  *  @param aI2C - A number of the I2C peripheral
  *  @param aAdr - Address of the I2C device
@@ -310,7 +310,7 @@ void I2C_MRd(I2C_t aI2C, U8 aAdr, U8 * pRx, U8 rxSize)
   pCtx->HW->CR1 |= I2C_CR1_START;
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Starts the I2C wrire/read transaction
  *  @param aI2C - A number of the I2C peripheral
  *  @param aAdr - Address of the I2C device
@@ -326,7 +326,7 @@ void I2C1_MEx(I2C_t aI2C, U8 aAdr, U8 * pTx, U8 txSize, U8 * pRx, U8 rxSize)
     //
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief DeInitializes the I2C peripheral
  *  @param aI2C - A number of the I2C peripheral
  *  @return None
@@ -337,4 +337,4 @@ void I2C1_DeInit(I2C_t aI2C)
     //
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/

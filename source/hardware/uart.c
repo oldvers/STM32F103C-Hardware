@@ -1,3 +1,5 @@
+#include "stm32f1xx.h"
+
 #include "types.h"
 #include "system.h"
 #include "interrupts.h"
@@ -5,7 +7,7 @@
 #include "gpio.h"
 #include "debug.h"
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 
 //#define UART_DEBUG
 
@@ -17,7 +19,7 @@
 
 #define UART_BAUDRATE        (115200)
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 
 typedef struct UART_Context_s
 {
@@ -29,7 +31,7 @@ typedef struct UART_Context_s
   UART_CbByte     TxCmpltCb;
 } UART_Context_t, * UART_Context_p;
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 
 static UART_Context_t gUARTCtx[UARTS_COUNT] =
 {
@@ -53,7 +55,20 @@ static UART_Context_t gUARTCtx[UARTS_COUNT] =
   },
 };
 
-//-----------------------------------------------------------------------------
+static const U32 gUARTStopBits[] =
+{
+  [UART_STOPBITS_1] = ( 0 ),
+  [UART_STOPBITS_2] = ( USART_CR2_STOP_1 ),
+};
+
+static const U32 gUARTParity[] =
+{
+  [UART_PARITY_NONE] = ( 0 ),
+  [UART_PARITY_EVEN] = ( USART_CR1_PCE ),
+  [UART_PARITY_ODD]  = ( USART_CR1_PCE | USART_CR1_PS ),
+};
+
+/*----------------------------------------------------------------------------*/
 /** @brief Changes UART baud rate
  *  @param aUART - UART Port Number
  *  @param aValue - Baud rate
@@ -92,7 +107,7 @@ void UART_SetBaudrate(UART_t aUART, U32 aValue)
   gUARTCtx[aUART].HW->BRR = brr;
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Initializes the UART peripheral
  *  @param aUART - UART Port Number
  *  @param aBaudRate - Baud Rate
@@ -165,12 +180,13 @@ void UART_Init
   UART_SetBaudrate(aUART, aBaudRate);
 
   /* Setup Control Registers */
-  gUARTCtx[aUART].HW->CR2 = ( 0 );
+  gUARTCtx[aUART].HW->CR1 = ( gUARTParity[UART_PARITY_NONE] );
+  gUARTCtx[aUART].HW->CR2 = ( gUARTStopBits[UART_STOPBITS_1] );
   gUARTCtx[aUART].HW->CR3 = ( 0 );
   gUARTCtx[aUART].HW->CR1 = ( USART_CR1_UE );
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief DeInitializes the UART peripheral
  *  @param aUART - UART Port Number
  *  @return None
@@ -223,7 +239,7 @@ void UART_DeInit(UART_t aUART)
   gUARTCtx[aUART].TxByteCb = NULL;
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief UART Interrupt Handler
  *  @param aUART - UART Port Number
  *  @return None
@@ -405,7 +421,7 @@ void UART_IrqHandler(UART_t aUART)
   }
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Enables transmiting via UART using Interrupts
  *  @param aUART - UART Port Number
  *  @return None
@@ -422,7 +438,7 @@ void UART_TxStart(UART_t aUART)
   UART_LOG("UART: Tx Start\r\n");
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Enables receiving via UART using Interrupts
  *  @param aUART - UART Port Number
  *  @return None
@@ -439,3 +455,5 @@ void UART_RxStart(UART_t aUART)
   gUARTCtx[aUART].HW->CR1 |= (USART_CR1_RE);
   UART_LOG("UART: Rx Start\r\n");
 }
+
+/*----------------------------------------------------------------------------*/

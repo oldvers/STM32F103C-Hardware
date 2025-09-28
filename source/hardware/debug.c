@@ -231,3 +231,5 @@ size_t __write(int handle, const unsigned char * buffer, size_t size)
   return size;
 }
 #endif
+
+/*----------------------------------------------------------------------------*/

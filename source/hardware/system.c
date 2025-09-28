@@ -1,3 +1,6 @@
+#include "stm32f1xx.h"
+#include "system_stm32f1xx.h"
+
 #include "types.h"
 #include "system.h"
 #include "interrupts.h"
@@ -135,3 +138,5 @@ void SYS_ClockConfig( void )
   APB2Clock = APBDiv[(RCC->CFGR & RCC_CFGR_PPRE2) >> RCC_CFGR_PPRE2_Pos];
   APB2Clock = CPUClock / APB2Clock;
 }
+
+/*----------------------------------------------------------------------------*/

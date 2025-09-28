@@ -1,20 +1,19 @@
 #ifndef __UART_H__
 #define __UART_H__
 
-#include "stm32f1xx.h"
 #include "types.h"
 
 typedef enum UART_STOPBITS_e
 {
   UART_STOPBITS_1 = 0,
-  UART_STOPBITS_2 = USART_CR2_STOP_1,
+  UART_STOPBITS_2,
 } UART_STOPBITS_t;
 
 typedef enum UART_PARITY_e
 {
-  UART_PARITY_NONE = (0),
-  UART_PARITY_EVEN = (USART_CR1_PCE),
-  UART_PARITY_ODD  = (USART_CR1_PCE | USART_CR1_PS),
+  UART_PARITY_NONE = 0,
+  UART_PARITY_EVEN,
+  UART_PARITY_ODD,
 } UART_PARITY_t;
 
 typedef enum UART_e
@@ -44,6 +43,6 @@ void UART_RxStart     (UART_t aUART);
 void UART_SetBaudrate (UART_t aUART, U32 aValue);
 
 /* Interrupt Handler Declaration */
-void UART_IrqHandler (UART_t aUART);
+void UART_IrqHandler  (UART_t aUART);
 
 #endif  /* __UART_H__ */

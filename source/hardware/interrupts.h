@@ -1,9 +1,7 @@
 #ifndef __INTERRUPTS_H__
 #define __INTERRUPTS_H__
 
-#include "stm32f1xx.h"
-
-/* --- Critical Area -------------------------------------------------------- */
+/* --- Critical Area --- */
 
 #define IRQ_SAFE_AREA()    unsigned int IrqState;
 #define IRQ_DISABLE()      {                               \
@@ -12,7 +10,7 @@
 #define IRQ_RESTORE()        __set_PRIMASK(IrqState);      \
                            }
 
-/* --- Public Functions ----------------------------------------------------- */
+/* --- Public Functions --- */
 void       IRQ_SetPriorityGrouping (void);
 FW_BOOLEAN IRQ_IsInExceptionMode   (void);
 void       IRQ_USB_Enable          (void);

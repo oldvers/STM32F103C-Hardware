@@ -1,4 +1,7 @@
 #include <stdio.h>
+
+#include "stm32f1xx.h"
+
 #include "types.h"
 #include "interrupts.h"
 #include "usb.h"

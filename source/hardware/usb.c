@@ -46,7 +46,7 @@ static USB_CbGeneric     pUSB_CbSOF                  = NULL;
 static USB_CbError       pUSB_CbError                = NULL;
 static EpConfiguration_t USB_EpCfg[USB_EP_QUANTITY]  = {0};
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Resets endpoint
  *  @param aNumber - Endpoint Number
  *  @return None
@@ -70,7 +70,7 @@ static void usb_EpReset(U32 aNumber)
   }
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Sets endpoint status
  *  @param aNumber - endpoint number
  *  @param aStatus - new status
@@ -97,7 +97,7 @@ static void usb_EpSetStatus(U32 aNumber, U32 aStatus)
   }
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Sets endpoint status
  *  @param aNumber - endpoint number
  *  @param aStatus - new status
@@ -109,7 +109,7 @@ void USB_SetCb_Reset(USB_CbGeneric pCbReset)
   pUSB_CbReset = pCbReset;
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Registers Suspend callback function
  *  @param pCbSuspend - Pointer to function
  *  @return None
@@ -119,7 +119,7 @@ void USB_SetCb_Suspend(USB_CbGeneric pCbSuspend)
   pUSB_CbSuspend = pCbSuspend;
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Registers WakeUp callback function
  *  @param pCbWakeUp - Pointer to function
  *  @return None
@@ -129,7 +129,7 @@ void USB_SetCb_WakeUp(USB_CbGeneric pCbWakeUp)
   pUSB_CbWakeUp = pCbWakeUp;
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Registers SOF callback function
  *  @param pCbSOF - Pointer to function
  *  @return None
@@ -139,7 +139,7 @@ void USB_SetCb_SOF(USB_CbGeneric pCbSOF)
   pUSB_CbSOF = pCbSOF;
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Registers Error callback function
  *  @param pCbError - Pointer to function
  *  @return None
@@ -149,7 +149,7 @@ void USB_SetCb_Error(USB_CbError pCbError)
   pUSB_CbError = pCbError;
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Registers Endpoint callback function
  *  @param aNumber - Number of endpoint
  *  @param pCbEp - Pointer to function
@@ -172,7 +172,7 @@ void USB_SetCb_Ep(U32 aNumber, USB_CbEp pCbEp)
   }
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Initializes USB peripheral
  *  @param aMaxEpCount - Maximum count of endpoints
  *  @param aCtrlEpMaxPacketSize - Maximum packet size for control endpoint
@@ -213,7 +213,7 @@ void USB_Init(U32 aCtrlEpMaxPacketSize)
   IRQ_USB_Enable();
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief De-Initializes USB peripheral
  *  @param None
  *  @return None
@@ -228,7 +228,7 @@ void USB_DeInit(void)
   RCC->APB1ENR &= (~RCC_APB1ENR_USBEN);
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Connects USB peripheral
  *  @param aConnnect - Connect/Disconnect
  *  @return None
@@ -252,7 +252,7 @@ void USB_Connect(FW_BOOLEAN aConnect)
   }
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Resets USB peripheral
  *  @param None
  *  @return None
@@ -301,7 +301,7 @@ void USB_Reset(void)
   USB->DADDR = USB_DADDR_EF | 0;
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Prepares internal variables for EP reconfiguration
  *  @param None
  *  @return None
@@ -314,7 +314,7 @@ void USB_PreapareReConfig(void)
   gEpFreeBuffAddr += (gCtrlEpMaxPacketSize << 1);
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Suspends USB peripheral
  *  @param None
  *  @return None
@@ -328,7 +328,7 @@ void USB_Suspend(void)
   USB->CNTR |= USB_CNTR_LP_MODE;
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Resumes USB peripheral
  *  @param None
  *  @return None
@@ -339,7 +339,7 @@ void USB_Resume(void)
   /* Performed by Hardware */
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief USB Remote Wakeup
  *  @param None
  *  @return None
@@ -351,7 +351,7 @@ void USB_WakeUp(void)
   USB->CNTR &= ~(USB_CNTR_FSUSP);
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief USB Remote Wakeup Configuration Function
  *  @param aConfig - Enable/Disable
  *  @return None
@@ -361,7 +361,7 @@ void USB_WakeUpConfigure(U32 aConfig)
   /* Not needed */
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief USB Set Address Function
  *  @param aAddress - USB Address
  *  @return None
@@ -371,7 +371,7 @@ void USB_SetAddress(U32 aAddress)
   USB->DADDR = USB_DADDR_EF | aAddress;
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief USB Configure Function
  *  @param aConfig - Configure/Deconfigure
  *  @return None
@@ -381,7 +381,7 @@ void USB_Configure(U32 aConfig)
   aConfig = aConfig;
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Configures USB Endpoint according to parameters
  *  @param aAddress - Endpoint address
  *  @param aMaxPacketSize - Maximum packet size
@@ -427,7 +427,7 @@ void USB_EpConfigure(U8 aAddress, U16 aMaxPacketSize, USB_EP_TYPE aType)
   EPREG(num) = val;
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Sets Direction for USB Control Endpoint
  *  @param aDirection - Out (== 0), In (!= 0)
  *  @return None
@@ -437,7 +437,7 @@ void USB_EpDirCtrl(U32 aDirection)
   /* Not needed */
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Enables USB Endpoint
  *  @param aNumber - Endpoint number
  *  @return None
@@ -448,7 +448,7 @@ void USB_EpEnable(U32 aNumber)
   usb_EpSetStatus(aNumber, USB_EP_TX_NAK | USB_EP_RX_VALID);
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Disables USB Endpoint
  *  @param aNumber - Endpoint Number
  *  @return None
@@ -459,7 +459,7 @@ void USB_EpDisable(U32 aNumber)
   usb_EpSetStatus(aNumber, USB_EP_TX_DIS | USB_EP_RX_DIS);
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Resets USB Endpoint
  *  @param aNumber - Endpoint Number
  *  @return None
@@ -470,7 +470,7 @@ void USB_EpReset(U32 aNumber)
   usb_EpReset(aNumber);
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Sets Stall for USB Endpoint
  *  @param aNumber - Endpoint Number
  *  @return None
@@ -481,7 +481,7 @@ void USB_EpSetStall(U32 aNumber)
   usb_EpSetStatus(aNumber, USB_EP_TX_STALL | USB_EP_RX_STALL);
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Clear Stall for USB Endpoint
  *  @param aNumber - Endpoint Number
  *  @return None
@@ -492,7 +492,7 @@ void USB_EpClrStall(U32 aNumber)
   usb_EpSetStatus(aNumber, USB_EP_TX_VALID | USB_EP_RX_VALID);
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Checks if USB Endpoint Rx buffer is empty
  *  @param aNumber - Endpoint Number
  *  @return FW_TRUE - if no data received, FW_FALSE - otherwise
@@ -522,7 +522,7 @@ FW_BOOLEAN USB_EpIsRxEmpty(U32 aNumber)
   return (result);
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Checks if USB Endpoint Tx buffer is empty
  *  @param aNumber - Endpoint Number
  *  @return FW_TRUE - if data has been transmitted, FW_FALSE - otherwise
@@ -552,7 +552,7 @@ FW_BOOLEAN USB_EpIsTxEmpty(U32 aNumber)
   return (result);
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Reads USB Endpoint Data
  *  @param aNumber - Endpoint Number
  *  @param pData - Pointer to Data Buffer
@@ -592,7 +592,7 @@ U32 USB_EpRead(U32 aNumber, U8 *pData, U32 aSize)
   return (cnt);
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Writes USB Endpoint Data
  *  @param aNumber - Endpoint Number
  *  @param pData - Pointer to Data Buffer
@@ -624,7 +624,7 @@ U32 USB_EpWrite(U32 aNumber, U8 *pData, U32 aSize)
   return (aSize);
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Reads USB Endpoint Data with Callback for each Byte
  *  @param aNumber - Endpoint Number
  *  @param pPutByteCb - Pointer to Callback that puts Byte to the Buffer
@@ -669,7 +669,7 @@ U32 USB_EpReadWsCb(U32 aNumber, USB_CbByte pPutByteCb, U32 aSize)
   return (cnt);
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Writes USB Endpoint Data with Callback for each Byte
  *  @param aNumber - Endpoint Number
  *  @param pGetByteCb - Pointer to Callback that gets Byte from the Buffer
@@ -714,7 +714,7 @@ U32 USB_EpWriteWsCb(U32 aNumber, USB_CbByte pGetByteCb, U32 aSize)
   return (aSize);
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Gets USB Last Frame Number
  *  @param None
  *  @return Frame Number
@@ -724,7 +724,7 @@ U32 USB_GetFrame(void)
   return (USB->FNR & USB_FNR_FN);
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief USB Interrupt Service Routine
  *  @param None
  *  @return None

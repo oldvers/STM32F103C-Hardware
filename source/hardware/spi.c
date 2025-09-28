@@ -1,11 +1,13 @@
 #include <stdio.h>
+
 #include "stm32f1xx.h"
+
 #include "types.h"
 #include "interrupts.h"
 #include "system.h"
 #include "spi.h"
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 
 typedef struct SPI_Context_s
 {
@@ -21,7 +23,7 @@ typedef struct SPI_Context_s
   U8                    Dummy;
 } SPI_Context_t, * SPI_Context_p;
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 
 static SPI_Context_t gSPICtx[SPI_COUNT] =
 {
@@ -55,7 +57,7 @@ static SPI_Context_t gSPICtx[SPI_COUNT] =
   },
 };
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Initializes the SPI peripheral
  *  @param aSPI - A number of SPI peripheral
  *  @param pCbComplete - Pointer to the SPI complete callback function
@@ -157,7 +159,7 @@ void SPI_Init(SPI_t aSPI, SPI_CbComplete_t pCbComplete)
   SPI->HW->CR1 |= SPI_CR1_SPE;
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Starts the SPI data exchange transaction
  *  @param aSPI - A number of the SPI peripheral
  *  @param pTx - Pointer to the data to be transmitted
@@ -210,7 +212,7 @@ void SPI_MExchange(SPI_t aSPI, U8 * pTx, U8 * pRx, U32 aSize)
   SPI->TxDMA->CCR |= (DMA_CCR_EN);
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief Handles the SPI interrupts
  *  @param aSPI - A number of the SPI peripheral
  *  @return None
@@ -230,7 +232,7 @@ void SPI_IrqHandler(SPI_t aSPI)
   }
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
 /** @brief DeInitializes the SPI peripheral
  *  @param aSPI - A number of the SPI peripheral
  *  @return None
@@ -241,4 +243,4 @@ void SPI_DeInit(SPI_t aSPI)
   //
 }
 
-//-----------------------------------------------------------------------------
+/*----------------------------------------------------------------------------*/
