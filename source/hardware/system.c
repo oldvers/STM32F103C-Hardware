@@ -139,4 +139,12 @@ void SYS_ClockConfig( void )
   APB2Clock = CPUClock / APB2Clock;
 }
 
+/* -------------------------------------------------------------------------- */
+
+FW_BOOLEAN SYS_IsInExceptionMode(void)
+{
+  U32 ipsr = __get_IPSR();
+  return (FW_BOOLEAN)(0 != ipsr);
+}
+
 /*----------------------------------------------------------------------------*/

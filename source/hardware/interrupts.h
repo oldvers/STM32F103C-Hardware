@@ -12,7 +12,6 @@
 
 /* --- Public Functions --- */
 void       IRQ_SetPriorityGrouping (void);
-FW_BOOLEAN IRQ_IsInExceptionMode   (void);
 void       IRQ_USB_Enable          (void);
 void       IRQ_USB_Disable         (void);
 void       IRQ_USART1_Enable       (void);
