@@ -82,7 +82,7 @@
                 </option>
                 <option>
                     <name>GenLowLevelInterface</name>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>GEndianModeBE</name>
@@ -1031,6 +1031,18 @@
             <data />
         </settings>
     </configuration>
+    <group>
+        <name>Configuration</name>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\..\..\configuration\cuties_config.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\..\..\configuration\hardware_config.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\..\..\..\configuration\rtt_config.h</name>
+        </file>
+    </group>
     <group>
         <name>Main</name>
         <file>
