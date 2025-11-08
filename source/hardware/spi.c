@@ -76,6 +76,9 @@ void SPI_Init(SPI_t aSPI, SPI_CbComplete_t pCbComplete)
 
   if (SPI_1 == aSPI)
   {
+    /* PCLK2 = HCLK */
+    RCC->CFGR |= (U32)RCC_CFGR_PPRE2_DIV8;
+
     /* Enable SPI clock */
     RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
 
@@ -180,6 +183,7 @@ void SPI_MExchange(SPI_t aSPI, U8 * pTx, U8 * pRx, U32 aSize)
 
   if (NULL == pTx)
   {
+    SPI->Dummy = 0xFF;
     SPI->TxDMA->CCR  &= ~(DMA_CCR_MINC);
     SPI->TxDMA->CMAR  = (U32)&SPI->Dummy;
   }
@@ -191,6 +195,7 @@ void SPI_MExchange(SPI_t aSPI, U8 * pTx, U8 * pRx, U32 aSize)
 
   if (NULL == pRx)
   {
+    SPI->Dummy = 0x00;
     SPI->RxDMA->CCR  &= ~(DMA_CCR_MINC);
     SPI->RxDMA->CMAR  = (U32)&SPI->Dummy;
   }
@@ -241,6 +246,46 @@ void SPI_IrqHandler(SPI_t aSPI)
 void SPI_DeInit(SPI_t aSPI)
 {
   //
+}
+
+/*----------------------------------------------------------------------------*/
+/** @brief Sets the SPI prescaler
+ *  @param aSPI - A number of the SPI peripheral
+ *  @param value - Prescaler value
+ *  @return True - in case of success
+ */
+FW_BOOLEAN SPI_SetBaudratePrescaler(SPI_t aSPI, U16 value)
+{
+  FW_BOOLEAN result = FW_FALSE;
+  SPI_Context_p SPI = &gSPICtx[aSPI];
+  U32 prescaler = 0;
+
+  if ((2 <= value) && (256 >= value) && (0 == (value & (value - 1))))
+  {
+    prescaler = (30 - __CLZ(value));
+
+    SPI->HW->CR1 &= (U32)~(SPI_CR1_BR);
+    SPI->HW->CR1 |= ((prescaler << SPI_CR1_BR_Pos) & SPI_CR1_BR_Msk);
+    result = FW_TRUE;
+  }
+
+  return result;
+}
+
+/*----------------------------------------------------------------------------*/
+
+U32 SPI_GetBaudRate(SPI_t aSPI) //, U8 * pTx, U8 * pRx, U32 aSize)
+{
+  //SPI_Context_p SPI = &gSPICtx[aSPI];
+  return 0;
+}
+
+/*----------------------------------------------------------------------------*/
+
+U8 SPI_GetLatestXferValue(SPI_t aSPI)
+{
+  SPI_Context_p SPI = &gSPICtx[aSPI];
+  return SPI->Dummy;
 }
 
 /*----------------------------------------------------------------------------*/
