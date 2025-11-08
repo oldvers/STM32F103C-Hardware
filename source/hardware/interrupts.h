@@ -1,7 +1,7 @@
 #ifndef __INTERRUPTS_H__
 #define __INTERRUPTS_H__
 
-/* --- Critical Area --- */
+/* --- Critical Area -------------------------------------------------------- */
 
 #define IRQ_SAFE_AREA()    unsigned int IrqState;
 #define IRQ_DISABLE()      {                               \
@@ -10,7 +10,7 @@
 #define IRQ_RESTORE()        __set_PRIMASK(IrqState);      \
                            }
 
-/* --- Public Functions --- */
+/* --- Public Functions ----------------------------------------------------- */
 void       IRQ_SetPriorityGrouping (void);
 void       IRQ_USB_Enable          (void);
 void       IRQ_USB_Disable         (void);
@@ -28,5 +28,7 @@ void       IRQ_SPI1_Enable         (void);
 void       IRQ_SPI1_Disable        (void);
 void       IRQ_SPI2_Enable         (void);
 void       IRQ_SPI2_Disable        (void);
+void       IRQ_TIM2_Enable         (void);
+void       IRQ_TIM2_Disable        (void);
 
 #endif /* __INTERRUPTS_H__ */

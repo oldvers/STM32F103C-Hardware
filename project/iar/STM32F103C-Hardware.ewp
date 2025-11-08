@@ -1014,7 +1014,7 @@
                 </option>
                 <option>
                     <name>IarchiveOutput</name>
-                    <state>D:\02_Work\099_STM32_Console\STM32F103\STM32F103C-Hardware\project\iar\build\release\exe\STM32F103C-Hardware.a</state>
+                    <state>D:\03_Engineering\43_BluePill_DualUart\STM32F103C-Hardware\project\iar\build\release\exe\STM32F103C-Hardware.a</state>
                 </option>
             </data>
         </settings>
@@ -1088,6 +1088,12 @@
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\source\hardware\system.h</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\source\hardware\tim.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\..\..\source\hardware\tim.h</name>
         </file>
         <file>
             <name>$PROJ_DIR$\..\..\source\hardware\uart.c</name>
