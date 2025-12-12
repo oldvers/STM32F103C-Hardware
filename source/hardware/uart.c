@@ -29,6 +29,11 @@ typedef struct UART_Context_s
   UART_CbByte     TxByteCb;
   UART_CbByte     TxCmpltCb;
   UART_CbByte     BreakCb;
+  struct
+  {
+    U32 TxActive : 1;
+    U32 RxActive : 1;
+  };
 } UART_Context_t, * UART_Context_p;
 
 /*----------------------------------------------------------------------------*/
@@ -43,6 +48,8 @@ static UART_Context_t gUARTCtx[UARTS_COUNT] =
     .TxByteCb  = NULL,
     .TxCmpltCb = NULL,
     .BreakCb   = NULL,
+    .TxActive  = FW_FALSE,
+    .RxActive  = FW_FALSE,
   },
   {
     .HW = USART2,
@@ -52,6 +59,8 @@ static UART_Context_t gUARTCtx[UARTS_COUNT] =
     .TxByteCb  = NULL,
     .TxCmpltCb = NULL,
     .BreakCb   = NULL,
+    .TxActive  = FW_FALSE,
+    .RxActive  = FW_FALSE,
   },
   {
     .HW = USART3,
@@ -61,6 +70,8 @@ static UART_Context_t gUARTCtx[UARTS_COUNT] =
     .TxByteCb  = NULL,
     .TxCmpltCb = NULL,
     .BreakCb   = NULL,
+    .TxActive  = FW_FALSE,
+    .RxActive  = FW_FALSE,
   },
 };
 
@@ -192,7 +203,9 @@ void UART_Init
   gUARTCtx[aUART].HW->CR1 = ( gUARTParity[UART_PARITY_NONE] );
   gUARTCtx[aUART].HW->CR2 = ( gUARTStopBits[UART_STOPBITS_1] );
   gUARTCtx[aUART].HW->CR3 = ( 0 );
-  gUARTCtx[aUART].HW->CR1 = ( USART_CR1_UE );
+  gUARTCtx[aUART].HW->CR1 |= ( USART_CR1_UE | USART_CR1_TE | USART_CR1_RE);
+  gUARTCtx[aUART].TxActive = FW_FALSE;
+  gUARTCtx[aUART].RxActive = FW_FALSE;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -249,6 +262,8 @@ void UART_DeInit(UART_t aUART)
   gUARTCtx[aUART].TxByteCb = NULL;
   gUARTCtx[aUART].TxCmpltCb = NULL;
   gUARTCtx[aUART].BreakCb = NULL;
+  gUARTCtx[aUART].TxActive = FW_FALSE;
+  gUARTCtx[aUART].RxActive = FW_FALSE;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -420,7 +435,8 @@ void UART_IrqHandler(UART_t aUART)
     else
     {
       /* Disable UART Tx Buffer Empty Interrupt */
-      gUARTCtx[aUART].HW->CR1 &= ~(USART_CR1_TE | USART_CR1_TXEIE);
+      gUARTCtx[aUART].HW->CR1 &= ~(USART_CR1_TXEIE);
+      gUARTCtx[aUART].TxActive = FW_FALSE;
     }
   }
 
@@ -428,7 +444,8 @@ void UART_IrqHandler(UART_t aUART)
   if ((0 != (sr & USART_SR_TC)) && (0 != (cr1 & USART_CR1_TCIE)))
   {
     /* Disable UART Tx Interrupts */
-    gUARTCtx[aUART].HW->CR1 &= ~(USART_CR1_TE | USART_CR1_TCIE);
+    gUARTCtx[aUART].HW->CR1 &= ~(USART_CR1_TCIE);
+    gUARTCtx[aUART].TxActive = FW_FALSE;
     if (NULL != gUARTCtx[aUART].TxCmpltCb)
     {
       (void)gUARTCtx[aUART].TxCmpltCb(NULL);
@@ -463,10 +480,11 @@ void UART_IrqHandler(UART_t aUART)
 void UART_TxStart(UART_t aUART)
 {
   /* Check if transmission is in progress */
-  if (0 != (gUARTCtx[aUART].HW->CR1 & USART_CR1_TE)) return;
+  if (FW_TRUE == gUARTCtx[aUART].TxActive) return;
+  gUARTCtx[aUART].TxActive = FW_TRUE;
 
   UART_LOG("UART: Tx Start\r\n");
-  gUARTCtx[aUART].HW->CR1 |= (USART_CR1_TE | USART_CR1_TXEIE);
+  gUARTCtx[aUART].HW->CR1 |= (USART_CR1_TXEIE);
 }
 
 /*----------------------------------------------------------------------------*/
@@ -480,11 +498,11 @@ void UART_TxStart(UART_t aUART)
 void UART_RxStart(UART_t aUART)
 {
   /* Check if reception is in progress */
-  if (0 != (gUARTCtx[aUART].HW->CR1 & USART_CR1_RE)) return;
+  if (FW_TRUE == gUARTCtx[aUART].RxActive) return;
 
   UART_LOG("UART: Rx Start\r\n");
   gUARTCtx[aUART].HW->CR1 |= (USART_CR1_RXNEIE | USART_CR1_IDLEIE);
-  gUARTCtx[aUART].HW->CR1 |= (USART_CR1_RE);
+  gUARTCtx[aUART].RxActive = FW_TRUE;
 }
 
 /*----------------------------------------------------------------------------*/

@@ -563,15 +563,22 @@ FW_BOOLEAN USB_EpIsTxEmpty(U32 aNumber)
 U32 USB_EpRead(U32 aNumber, U8 *pData, U32 aSize)
 {
   /* Double Buffering is not yet supported */
-  U32 num, cnt, *pv, n;
+  U32 num, cnt, *pv, n, val;
   U16 data;
 
   num = aNumber & USB_EP_NUM_MASK;
+  val = (EPREG(num) & USB_EPRX_STAT);
+  if (USB_EP_RX_VALID == val)
+  {
+    /* The EP has been already read */
+    return 0;
+  }
 
   cnt = pEpBuffDscr[num].COUNT_RX & USB_EP_COUNT_MASK;
   if (aSize < cnt)
   {
-    return 0; /* The Buffer size is too small for received bytes */
+    /* The Buffer size is too small for received bytes */
+    return 0;
   }
 
   pv  = (U32 *)(USB_PMAADDR + 2 * (pEpBuffDscr[num].ADDR_RX));
@@ -603,9 +610,15 @@ U32 USB_EpRead(U32 aNumber, U8 *pData, U32 aSize)
 U32 USB_EpWrite(U32 aNumber, U8 *pData, U32 aSize)
 {
   /* Double Buffering is not yet supported */
-  U32 num, *pv, n;
+  U32 num, *pv, n, val;
 
   num = aNumber & USB_EP_NUM_MASK;
+  val = (EPREG(num) & USB_EPTX_STAT);
+  if (USB_EP_TX_VALID == val)
+  {
+    /* The EP has been already written */
+    return 0;
+  }
 
   if (aSize > USB_EpCfg[num].IMaxSize)
   {
@@ -635,7 +648,7 @@ U32 USB_EpWrite(U32 aNumber, U8 *pData, U32 aSize)
 U32 USB_EpReadWsCb(U32 aNumber, USB_CbByte pPutByteCb, U32 aSize)
 {
   /* Double Buffering is not yet supported */
-  U32 num, cnt, *pv, n;
+  U32 num, cnt, *pv, n, val;
   U8 data[2] = {0};
 
   if (NULL == pPutByteCb)
@@ -644,11 +657,18 @@ U32 USB_EpReadWsCb(U32 aNumber, USB_CbByte pPutByteCb, U32 aSize)
   }
 
   num = aNumber & USB_EP_NUM_MASK;
+  val = (EPREG(num) & USB_EPRX_STAT);
+  if (USB_EP_RX_VALID == val)
+  {
+    /* The EP has been already read */
+    return 0;
+  }
 
   cnt = pEpBuffDscr[num].COUNT_RX & USB_EP_COUNT_MASK;
   if (aSize < cnt)
   {
-    return 0; /* The Buffer size is too small for received bytes */
+    /* The Buffer size is too small for received bytes */
+    return 0;
   }
 
   pv  = (U32 *)(USB_PMAADDR + 2 * (pEpBuffDscr[num].ADDR_RX));
@@ -680,7 +700,7 @@ U32 USB_EpReadWsCb(U32 aNumber, USB_CbByte pPutByteCb, U32 aSize)
 U32 USB_EpWriteWsCb(U32 aNumber, USB_CbByte pGetByteCb, U32 aSize)
 {
   /* Double Buffering is not yet supported */
-  U32 num, *pv, n;
+  U32 num, *pv, n, val;
   U8 data[2] = {0};
 
   if (NULL == pGetByteCb)
@@ -689,6 +709,12 @@ U32 USB_EpWriteWsCb(U32 aNumber, USB_CbByte pGetByteCb, U32 aSize)
   }
 
   num = aNumber & USB_EP_NUM_MASK;
+  val = (EPREG(num) & USB_EPTX_STAT);
+  if (USB_EP_TX_VALID == val)
+  {
+    /* The EP has been already written */
+    return 0;
+  }
 
   if (aSize > USB_EpCfg[num].IMaxSize)
   {
@@ -735,18 +761,9 @@ void USB_IRQHandler(void)
 
   istr = USB->ISTR;
 
-  /* Start of Frame */
-  if (istr & USB_ISTR_SOF)
-  {
-    if (NULL != pUSB_CbSOF) pUSB_CbSOF();
-    USB->ISTR = (U16)~(USB_ISTR_SOF);
-  }
-
   /* Endpoint Interrupts */
   while ((istr = USB->ISTR) & USB_ISTR_CTR)
   {
-    USB->ISTR = (U16)~(USB_ISTR_CTR);
-
     num = istr & USB_ISTR_EP_ID;
 
     val = EPREG(num);
@@ -773,6 +790,14 @@ void USB_IRQHandler(void)
         USB_EpCfg[num].ICb(USB_EVNT_EP_IN);
       }
     }
+    USB->ISTR = (U16)~(USB_ISTR_CTR);
+  }
+
+  /* Start of Frame */
+  if (istr & USB_ISTR_SOF)
+  {
+    if (NULL != pUSB_CbSOF) pUSB_CbSOF();
+    USB->ISTR = (U16)~(USB_ISTR_SOF);
   }
 
   /* USB Reset Request */
