@@ -20,6 +20,7 @@ typedef struct SPI_Context_s
   U8                  * RxBuffer;
   U32                   RxSize;
   SPI_CbComplete_t      CbComplete;
+  U32                   Param;
   U8                    Dummy;
 } SPI_Context_t, * SPI_Context_p;
 
@@ -39,6 +40,7 @@ static SPI_Context_t gSPICtx[SPI_COUNT] =
     .RxBuffer   = NULL,
     .RxSize     = 0,
     .CbComplete = NULL,
+    .Param      = 0,
     .Dummy      = 0xFF,
   },
   {
@@ -53,6 +55,7 @@ static SPI_Context_t gSPICtx[SPI_COUNT] =
     .RxBuffer   = NULL,
     .RxSize     = 0,
     .CbComplete = NULL,
+    .Param      = 0,
     .Dummy      = 0xFF,
   },
 };
@@ -61,15 +64,18 @@ static SPI_Context_t gSPICtx[SPI_COUNT] =
 /** @brief Initializes the SPI peripheral
  *  @param aSPI - A number of SPI peripheral
  *  @param pCbComplete - Pointer to the SPI complete callback function
+ *  @param aParam - Optional parameter to use in callback function
  *  @return None
  */
 
-void SPI_Init(SPI_t aSPI, SPI_CbComplete_t pCbComplete)
+void SPI_Init(SPI_t aSPI, SPI_CbComplete_t pCbComplete, U32 aParam)
 {
   SPI_Context_p SPI = &gSPICtx[aSPI];
 
   /* Setup IRQ Callback */
   SPI->CbComplete = pCbComplete;
+  /* Store the parameter */
+  SPI->Param = aParam;
 
   /* Enable DMA clock */
   RCC->AHBENR |= RCC_AHBENR_DMA1EN;
@@ -233,7 +239,7 @@ void SPI_IrqHandler(SPI_t aSPI)
 
   if (NULL != SPI->CbComplete)
   {
-    SPI->CbComplete(FW_COMPLETE);
+    SPI->CbComplete(FW_COMPLETE, SPI->Param);
   }
 }
 
@@ -273,14 +279,22 @@ FW_BOOLEAN SPI_SetBaudratePrescaler(SPI_t aSPI, U16 value)
 }
 
 /*----------------------------------------------------------------------------*/
+/** @brief Gets the SPI baudrate
+ *  @param aSPI - A number of the SPI peripheral
+ *  @return SPI baudrate
+ */
 
-U32 SPI_GetBaudRate(SPI_t aSPI) //, U8 * pTx, U8 * pRx, U32 aSize)
+U32 SPI_GetBaudRate(SPI_t aSPI)
 {
   //SPI_Context_p SPI = &gSPICtx[aSPI];
   return 0;
 }
 
 /*----------------------------------------------------------------------------*/
+/** @brief Gets the last SPI transfer value
+ *  @param aSPI - A number of the SPI peripheral
+ *  @return The last SPI transfer value
+ */
 
 U8 SPI_GetLatestXferValue(SPI_t aSPI)
 {

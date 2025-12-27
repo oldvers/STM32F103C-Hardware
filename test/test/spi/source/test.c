@@ -33,7 +33,7 @@ static FW_RESULT          gResult                    = FW_FAIL;
 
 /* -------------------------------------------------------------------------- */
 
-static FW_BOOLEAN spi_Complete(FW_RESULT aResult)
+static FW_BOOLEAN spi_Complete(FW_RESULT aResult, U32 aParam)
 {
   BaseType_t xHigherPriorityTaskWoken, xResult;
 
@@ -104,7 +104,7 @@ static FW_BOOLEAN Test_SPI1_Init(void)
   LOG("-----------------------------------------------------------\r\n");
 
   LOG(" - Initialize the SPI1 peripheral\r\n");
-  SPI_Init(SPI_1, spi_Complete);
+  SPI_Init(SPI_1, spi_Complete, 0);
 
   LOG(" - Initialize the SPI bus pins\r\n");
   GPIO_Init(SPI1_CS_PORT,   SPI1_CS_PIN,   GPIO_TYPE_OUT_PP_2MHZ,  1);
@@ -173,7 +173,7 @@ static FW_BOOLEAN Test_SPI2_Init(void)
   LOG("-----------------------------------------------------------\r\n");
 
   LOG(" - Initialize the SPI2 peripheral\r\n");
-  SPI_Init(SPI_2, spi_Complete);
+  SPI_Init(SPI_2, spi_Complete, 0);
 
   LOG(" - Initialize the SPI bus pins\r\n");
   GPIO_Init(SPI2_CS_PORT,   SPI2_CS_PIN,   GPIO_TYPE_OUT_PP_2MHZ,  1);
