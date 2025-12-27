@@ -17,6 +17,7 @@ typedef struct I2C_Context_s
   U32                RxSize;
   I2C_CbComplete_t   CbComplete;
   U32                Index;
+  U32                Param;
 } I2C_Context_t, * I2C_Context_p;
 
 /*----------------------------------------------------------------------------*/
@@ -38,6 +39,7 @@ static I2C_Context_t gI2CCtx[I2CS_COUNT] =
     .RxSize     = 0,
     .CbComplete = NULL,
     .Index      = 0,
+    .Param      = 0,
   },
   {
     .HW         = I2C2,
@@ -48,6 +50,7 @@ static I2C_Context_t gI2CCtx[I2CS_COUNT] =
     .RxSize     = 0,
     .CbComplete = NULL,
     .Index      = 0,
+    .Param      = 0,
   },
 };
 
@@ -88,7 +91,7 @@ static void i2c_Complete(I2C_Context_t * pContext, FW_RESULT aResult)
 {
   if (NULL != pContext->CbComplete)
   {
-    (void)pContext->CbComplete(aResult);
+    (void)pContext->CbComplete(aResult, pContext->Param);
   }
   pContext->HW->CR2 &= ~(I2C_CR2_ITEVTEN | I2C_CR2_ITBUFEN | I2C_CR2_ITERREN);
 }
@@ -196,7 +199,7 @@ static void i2c_Err(I2C_Context_t * pContext)
  *  @return None
  */
 
-void I2C_Init(I2C_t aI2C, I2C_CbComplete_t pCbComplete)
+void I2C_Init(I2C_t aI2C, I2C_CbComplete_t pCbComplete, U32 aParam)
 {
   if (I2C_1 == aI2C)
   {
@@ -229,6 +232,8 @@ void I2C_Init(I2C_t aI2C, I2C_CbComplete_t pCbComplete)
 
   /* Setup the callback */
   gI2CCtx[aI2C].CbComplete = pCbComplete;
+  /* Store the parameter */
+  gI2CCtx[aI2C].Param = aParam;
 
   /* Init the peripheral */
   i2c_Init(gI2CCtx[aI2C].HW);

@@ -32,7 +32,7 @@ static FW_RESULT          gResult                    = FW_FAIL;
 
 /* -------------------------------------------------------------------------- */
 
-static FW_BOOLEAN i2c_Complete(FW_RESULT aResult)
+static FW_BOOLEAN i2c_Complete(FW_RESULT aResult, U32 aParam)
 {
   BaseType_t xHigherPriorityTaskWoken, xResult;
 
@@ -103,7 +103,7 @@ static FW_BOOLEAN Test_I2C_Init(void)
   LOG("-----------------------------------------------------------\r\n");
 
   LOG(" - Initialize the I2C peripheral\r\n");
-  I2C_Init(I2C_1, i2c_Complete);
+  I2C_Init(I2C_1, i2c_Complete, 0);
 
   LOG(" - Initialize the I2C bus pins\r\n");
   GPIO_Init(I2C1_SCL_PORT, I2C1_SCL_PIN, GPIO_TYPE_ALT_OD_10MHZ, 1);
