@@ -25,11 +25,10 @@ typedef __packed struct EpBuffDescription_s
 typedef __packed struct EpConfiguration_s
 {
   U16      IMaxSize; /* In Enpoint max transfer size  */
-  U16      IRsvd;
-  USB_CbEp ICb;      /* In Enpoint Callback function  */
   U16      OMaxSize; /* Out Enpoint max transfer size */
-  U16      ORsvd;
+  USB_CbEp ICb;      /* In Enpoint Callback function  */
   USB_CbEp OCb;      /* Out Enpoint Callback function */
+  U32      Param;    /* Optional parameter, to use in callback functions */
 } EpConfiguration_t, * EpConfiguration_p;
 
 /* Pointer to Endpoint Buffer Descriptors */
@@ -183,10 +182,11 @@ void USB_Init(U32 aCtrlEpMaxPacketSize)
 {
   for (U32 num = 0; num < USB_EP_QUANTITY; num++)
   {
-    USB_EpCfg[num].ICb = NULL;
-    USB_EpCfg[num].OCb = NULL;
+    USB_EpCfg[num].ICb      = NULL;
+    USB_EpCfg[num].OCb      = NULL;
     USB_EpCfg[num].IMaxSize = 0;
     USB_EpCfg[num].OMaxSize = 0;
+    USB_EpCfg[num].Param    = 0;
   }
 
   gCtrlEpMaxPacketSize = aCtrlEpMaxPacketSize;
@@ -386,9 +386,16 @@ void USB_Configure(U32 aConfig)
  *  @param aAddress - Endpoint address
  *  @param aMaxPacketSize - Maximum packet size
  *  @param aAttributes - Endpoint attributes
+ *  @param aParam - Optional parameter, to use in callback functions
  *  @return None
  */
-void USB_EpConfigure(U8 aAddress, U16 aMaxPacketSize, USB_EP_TYPE aType)
+void USB_EpConfigure
+(
+  U8 aAddress,
+  U16 aMaxPacketSize,
+  USB_EP_TYPE aType,
+  U32 aParam
+)
 {
   /* Double Buffering is not yet supported */
   U32 num, val;
@@ -421,6 +428,9 @@ void USB_EpConfigure(U8 aAddress, U16 aMaxPacketSize, USB_EP_TYPE aType)
     }
   }
   gEpFreeBuffAddr += val;
+
+  /* Store the parameter */
+  USB_EpCfg[num].Param = aParam;
 
   val = (aType << USB_EP_TYPE_MASK_Pos) & USB_EP_TYPE_MASK;
   val |= num;
@@ -648,7 +658,7 @@ U32 USB_EpWrite(U32 aNumber, U8 *pData, U32 aSize)
 U32 USB_EpReadWsCb(U32 aNumber, USB_CbByte pPutByteCb, U32 aSize)
 {
   /* Double Buffering is not yet supported */
-  U32 num, cnt, *pv, n, val;
+  U32 num, cnt, *pv, n, val, param;
   U8 data[2] = {0};
 
   if (NULL == pPutByteCb)
@@ -671,18 +681,20 @@ U32 USB_EpReadWsCb(U32 aNumber, USB_CbByte pPutByteCb, U32 aSize)
     return 0;
   }
 
+  param = USB_EpCfg[num].Param;
+
   pv  = (U32 *)(USB_PMAADDR + 2 * (pEpBuffDscr[num].ADDR_RX));
 
   for (n = 0; n < (cnt >> 1); n++)
   {
     *((U16 *)data) = *pv++;
-    pPutByteCb(&data[0]);
-    pPutByteCb(&data[1]);
+    pPutByteCb(param, &data[0]);
+    pPutByteCb(param, &data[1]);
   }
   if (1 == (cnt % 2))
   {
     *((U16 *)data) = *pv++;
-    pPutByteCb(&data[0]);
+    pPutByteCb(param, &data[0]);
   }
   usb_EpSetStatus(aNumber, USB_EP_RX_VALID);
 
@@ -700,7 +712,7 @@ U32 USB_EpReadWsCb(U32 aNumber, USB_CbByte pPutByteCb, U32 aSize)
 U32 USB_EpWriteWsCb(U32 aNumber, USB_CbByte pGetByteCb, U32 aSize)
 {
   /* Double Buffering is not yet supported */
-  U32 num, *pv, n, val;
+  U32 num, *pv, n, val, param;
   U8 data[2] = {0};
 
   if (NULL == pGetByteCb)
@@ -721,16 +733,18 @@ U32 USB_EpWriteWsCb(U32 aNumber, USB_CbByte pGetByteCb, U32 aSize)
     aSize = USB_EpCfg[num].IMaxSize;
   }
 
+  param = USB_EpCfg[num].Param;
+
   pv  = (U32 *)(USB_PMAADDR + 2 * (pEpBuffDscr[num].ADDR_TX));
   for (n = 0; n < (aSize >> 1); n++)
   {
-    pGetByteCb(&data[0]);
-    pGetByteCb(&data[1]);
+    pGetByteCb(param, &data[0]);
+    pGetByteCb(param, &data[1]);
     *pv++ = *((U16 *)data);
   }
   if (1 == (aSize % 2))
   {
-    pGetByteCb(&data[0]);
+    pGetByteCb(param, &data[0]);
     data[1] = 0;
     *pv++ = *((U16 *)data);
   }
@@ -757,7 +771,7 @@ U32 USB_GetFrame(void)
  */
 void USB_IRQHandler(void)
 {
-  U32 istr, num, val;
+  U32 istr, num, val, param;
 
   istr = USB->ISTR;
 
@@ -765,6 +779,8 @@ void USB_IRQHandler(void)
   while ((istr = USB->ISTR) & USB_ISTR_CTR)
   {
     num = istr & USB_ISTR_EP_ID;
+
+    param = USB_EpCfg[num].Param;
 
     val = EPREG(num);
     if (val & USB_EP_CTR_RX)
@@ -774,11 +790,11 @@ void USB_IRQHandler(void)
       {
         if (val & USB_EP_SETUP)
         {
-          USB_EpCfg[num].OCb(USB_EVNT_EP_SETUP);
+          USB_EpCfg[num].OCb(param, USB_EVNT_EP_SETUP);
         }
         else
         {
-          USB_EpCfg[num].OCb(USB_EVNT_EP_OUT);
+          USB_EpCfg[num].OCb(param, USB_EVNT_EP_OUT);
         }
       }
     }
@@ -787,7 +803,7 @@ void USB_IRQHandler(void)
       EPREG(num) = val & ~USB_EP_CTR_TX & USB_EPREG_MASK;
       if (NULL != USB_EpCfg[num].ICb)
       {
-        USB_EpCfg[num].ICb(USB_EVNT_EP_IN);
+        USB_EpCfg[num].ICb(param, USB_EVNT_EP_IN);
       }
     }
     USB->ISTR = (U16)~(USB_ISTR_CTR);

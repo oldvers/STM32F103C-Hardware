@@ -47,8 +47,8 @@ typedef enum USB_EP_TYPE_E
 /* Callback Function Declarations */
 typedef void (*USB_CbGeneric)(void);
 typedef void (*USB_CbError)(U32 aError);
-typedef void (*USB_CbEp)(U32 aEvent);
-typedef void (*USB_CbByte)(U8 * pByte);
+typedef void (*USB_CbEp)(U32 aParam, U32 aEvent);
+typedef void (*USB_CbByte)(U32 aParam, U8 * pByte);
 
 /* Function Declarations */
 void       USB_SetCb_Reset       (USB_CbGeneric pCbReset);
@@ -71,7 +71,8 @@ void       USB_Configure         (U32 aConfig);
 void       USB_EpConfigure       (
                                    U8 aAddress,
                                    U16 aMaxPacketSize,
-                                   USB_EP_TYPE aType
+                                   USB_EP_TYPE aType,
+                                   U32 aParam
                                  );
 void       USB_EpDirCtrl         (U32 aDirection);
 void       USB_EpEnable          (U32 aNumber);
