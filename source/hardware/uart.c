@@ -24,6 +24,7 @@ typedef struct UART_Context_s
 {
   USART_TypeDef * HW;
   U32             BaudRate;
+  U32             Param;
   UART_CbByte     RxByteCb;
   UART_CbByte     RxCmpltCb;
   UART_CbByte     TxByteCb;
@@ -41,8 +42,9 @@ typedef struct UART_Context_s
 static UART_Context_t gUARTCtx[UARTS_COUNT] =
 {
   {
-    .HW = USART1,
+    .HW        = USART1,
     .BaudRate  = UART_BAUDRATE,
+    .Param     = 0,
     .RxByteCb  = NULL,
     .RxCmpltCb = NULL,
     .TxByteCb  = NULL,
@@ -52,8 +54,9 @@ static UART_Context_t gUARTCtx[UARTS_COUNT] =
     .RxActive  = FW_FALSE,
   },
   {
-    .HW = USART2,
+    .HW        = USART2,
     .BaudRate  = UART_BAUDRATE,
+    .Param     = 0,
     .RxByteCb  = NULL,
     .RxCmpltCb = NULL,
     .TxByteCb  = NULL,
@@ -63,8 +66,9 @@ static UART_Context_t gUARTCtx[UARTS_COUNT] =
     .RxActive  = FW_FALSE,
   },
   {
-    .HW = USART3,
+    .HW        = USART3,
     .BaudRate  = UART_BAUDRATE,
+    .Param     = 0,
     .RxByteCb  = NULL,
     .RxCmpltCb = NULL,
     .TxByteCb  = NULL,
@@ -131,24 +135,11 @@ void UART_SetBaudrate(UART_t aUART, U32 aValue)
 /** @brief Initializes the UART peripheral
  *  @param aUART - UART Port Number
  *  @param aBaudRate - Baud Rate
- *  @param pRxByteCb - Callback, called when byte is received.
- *                     Result is ignored. Called in IRQ context
- *  @param pTxByteCb - Callback, called to get byte that need to be transmitted
- *                     Called in IRQ context
- *                     If returns FW_TRUE - continue transmiting
- *                     If returns FW_FALSE - transmiting stops
+ *  @param aParam - Optional parameter, to use in callback functions
  *  @return None
  */
 
-void UART_Init
-(
-  UART_t      aUART,
-  U32         aBaudRate,
-  UART_CbByte pRxByteCb,
-  UART_CbByte pRxCmpltCb,
-  UART_CbByte pTxByteCb,
-  UART_CbByte pTxCmpltCb
-)
+void UART_Init(UART_t aUART, U32 aBaudRate, U32 aParam)
 {
   switch (aUART)
   {
@@ -190,11 +181,8 @@ void UART_Init
       break;
   }
 
-  /* Setup Callbacks */
-  gUARTCtx[aUART].RxByteCb  = pRxByteCb;
-  gUARTCtx[aUART].RxCmpltCb = pRxCmpltCb;
-  gUARTCtx[aUART].TxByteCb  = pTxByteCb;
-  gUARTCtx[aUART].TxCmpltCb = pTxCmpltCb;
+  /* Store the parameter */
+  gUARTCtx[aUART].Param  = aParam;
 
   /* Setup Baud Rate */
   UART_SetBaudrate(aUART, aBaudRate);
@@ -206,6 +194,76 @@ void UART_Init
   gUARTCtx[aUART].HW->CR1 |= ( USART_CR1_UE | USART_CR1_TE | USART_CR1_RE);
   gUARTCtx[aUART].TxActive = FW_FALSE;
   gUARTCtx[aUART].RxActive = FW_FALSE;
+}
+
+/*----------------------------------------------------------------------------*/
+/** @brief Sets the Break callback function
+ *  @param aUART - UART Port Number
+ *  @param pCb - Callback, called when break is received.
+ *               Result is ignored. Called in IRQ context
+ */
+
+void UART_SetCb_Break(UART_t aUART, UART_CbByte pCb)
+{
+  if (NULL != pCb)
+  {
+    gUARTCtx[aUART].HW->CR2 |= USART_CR2_LBDIE;
+  }
+  else
+  {
+    gUARTCtx[aUART].HW->CR2 &= ~(USART_CR2_LBDIE);
+  }
+  gUARTCtx[aUART].BreakCb = pCb;
+}
+
+/*----------------------------------------------------------------------------*/
+/** @brief Sets the Rx Byte callback function
+ *  @param aUART - UART Port Number
+ *  @param pCb - Callback, called when byte is received.
+ *               Result is ignored. Called in IRQ context
+ */
+
+void UART_SetCB_RxByte(UART_t aUART, UART_CbByte pCb)
+{
+  gUARTCtx[aUART].RxByteCb = pCb;
+}
+
+/*----------------------------------------------------------------------------*/
+/** @brief Sets the Rx Complete callback function
+ *  @param aUART - UART Port Number
+ *  @param pCb - Callback, called when the Idle condition is received.
+ *               Result is ignored. Called in IRQ context
+ */
+
+void UART_SetCB_RxCmplt(UART_t aUART, UART_CbByte pCb)
+{
+  gUARTCtx[aUART].RxCmpltCb = pCb;
+}
+
+/*----------------------------------------------------------------------------*/
+/** @brief Sets the Tx Byte callback function
+ *  @param aUART - UART Port Number
+ *  @param pCb - Callback, called to get byte that need to be transmitted
+ *               Called in IRQ context
+ *               If returns FW_TRUE - continue transmitting
+ *               If returns FW_FALSE - transmitting stops
+ */
+
+void UART_SetCB_TxByte(UART_t aUART, UART_CbByte pCb)
+{
+  gUARTCtx[aUART].TxByteCb = pCb;
+}
+
+/*----------------------------------------------------------------------------*/
+/** @brief Sets the Tx Complete callback function
+ *  @param aUART - UART Port Number
+ *  @param pCb - Callback, called when the transmitting is completed.
+ *               Result is ignored. Called in IRQ context
+ */
+
+void UART_SetCB_TxCmplt(UART_t aUART, UART_CbByte pCb)
+{
+  gUARTCtx[aUART].TxCmpltCb = pCb;
 }
 
 /*----------------------------------------------------------------------------*/
@@ -282,6 +340,7 @@ void UART_IrqHandler(UART_t aUART)
   /* Reading the SR must be the last one to guarantee the RXNE and TC flags
      to be both set in case of half-duplex communication */
   U32 sr     = gUARTCtx[aUART].HW->SR;
+  U32 param  = gUARTCtx[aUART].Param;
 
   /* If no error occurs */
   errors = (sr & (USART_SR_PE | USART_SR_FE | USART_SR_ORE | USART_SR_NE));
@@ -293,7 +352,7 @@ void UART_IrqHandler(UART_t aUART)
       data = gUARTCtx[aUART].HW->DR;
       if (NULL != gUARTCtx[aUART].RxByteCb)
       {
-        (void)gUARTCtx[aUART].RxByteCb((U8 *)&data);
+        (void)gUARTCtx[aUART].RxByteCb(param, (U8 *)&data);
       }
     }
 
@@ -303,7 +362,7 @@ void UART_IrqHandler(UART_t aUART)
       data = gUARTCtx[aUART].HW->DR;
       if (NULL != gUARTCtx[aUART].RxCmpltCb)
       {
-        (void)gUARTCtx[aUART].RxCmpltCb(NULL);
+        (void)gUARTCtx[aUART].RxCmpltCb(param, NULL);
       }
     }
   }
@@ -419,7 +478,7 @@ void UART_IrqHandler(UART_t aUART)
   {
     if (NULL != gUARTCtx[aUART].TxByteCb)
     {
-      if (FW_TRUE == gUARTCtx[aUART].TxByteCb((U8 *)&data))
+      if (FW_TRUE == gUARTCtx[aUART].TxByteCb(param, (U8 *)&data))
       {
         /* Transmit data */
         gUARTCtx[aUART].HW->DR = data;
@@ -448,7 +507,7 @@ void UART_IrqHandler(UART_t aUART)
     gUARTCtx[aUART].TxActive = FW_FALSE;
     if (NULL != gUARTCtx[aUART].TxCmpltCb)
     {
-      (void)gUARTCtx[aUART].TxCmpltCb(NULL);
+      (void)gUARTCtx[aUART].TxCmpltCb(param, NULL);
     }
   }
 
@@ -464,7 +523,7 @@ void UART_IrqHandler(UART_t aUART)
 
     if (NULL != gUARTCtx[aUART].BreakCb)
     {
-      (void)gUARTCtx[aUART].BreakCb(NULL);
+      (void)gUARTCtx[aUART].BreakCb(param, NULL);
     }
   }
 }
@@ -506,6 +565,9 @@ void UART_RxStart(UART_t aUART)
 }
 
 /*----------------------------------------------------------------------------*/
+/** @brief Enables bidirectional UART mode
+ *  @param aUART - UART Port Number
+ */
 
 void UART_BiDirModeEn(UART_t aUART)
 {
@@ -513,21 +575,9 @@ void UART_BiDirModeEn(UART_t aUART)
 }
 
 /*----------------------------------------------------------------------------*/
-
-void UART_SetBreakCallback(UART_t aUART, UART_CbByte pCb)
-{
-  if (NULL != pCb)
-  {
-    gUARTCtx[aUART].HW->CR2 |= USART_CR2_LBDIE;
-  }
-  else
-  {
-    gUARTCtx[aUART].HW->CR2 &= ~(USART_CR2_LBDIE);
-  }
-  gUARTCtx[aUART].BreakCb = pCb;
-}
-
-/*----------------------------------------------------------------------------*/
+/** @brief Sends the Break
+ *  @param aUART - UART Port Number
+ */
 
 void UART_Break(UART_t aUART)
 {
