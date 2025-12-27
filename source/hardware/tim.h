@@ -13,13 +13,17 @@ typedef enum
 } TIM_CH_t;
 
 /* Callback Function Declarations */
-typedef void (* TIM_CbComplete_t)(TIM_CH_t aChannel, U16 aValue);
+typedef void (* TIM_CbComplete_t)(TIM_CH_t aChannel, U16 aValue, U32 aParam);
 
 /* Function Declarations */
 void TIM2_IrqHandler       (void);
 void TIM2_Enable           (void);
 void TIM2_Disable          (void);
-void TIM2_InitInputCapture (U8 aChannel, TIM_CbComplete_t pCbComplete);
+void TIM2_InitInputCapture (
+                             U8 aChannel,
+                             TIM_CbComplete_t pCbComplete,
+                             U32 aParam
+                           );
 void TIM2_DeInit           (void);
 
 #endif /* __TIM_H__ */
