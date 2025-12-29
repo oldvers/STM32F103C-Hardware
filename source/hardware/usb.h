@@ -56,7 +56,7 @@ void       USB_SetCb_Suspend     (USB_CbGeneric pCbSuspend);
 void       USB_SetCb_WakeUp      (USB_CbGeneric pCbWakeUp);
 void       USB_SetCb_SOF         (USB_CbGeneric pCbSOF);
 void       USB_SetCb_Error       (USB_CbError pCbError);
-void       USB_SetCb_Ep          (U32 aNumber, USB_CbEp pCbEp);
+void       USB_SetCb_Ep          (U32 aNumber, USB_CbEp pCbEp, U32 aParam);
 void       USB_Init              (U32 aCtrlEpMaxPacketSize);
 void       USB_DeInit            (void);
 void       USB_Connect           (FW_BOOLEAN aConnnect);
@@ -71,8 +71,7 @@ void       USB_Configure         (U32 aConfig);
 void       USB_EpConfigure       (
                                    U8 aAddress,
                                    U16 aMaxPacketSize,
-                                   USB_EP_TYPE aType,
-                                   U32 aParam
+                                   USB_EP_TYPE aType
                                  );
 void       USB_EpDirCtrl         (U32 aDirection);
 void       USB_EpEnable          (U32 aNumber);

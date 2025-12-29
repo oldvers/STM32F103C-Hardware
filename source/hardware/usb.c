@@ -152,12 +152,16 @@ void USB_SetCb_Error(USB_CbError pCbError)
 /** @brief Registers Endpoint callback function
  *  @param aNumber - Number of endpoint
  *  @param pCbEp - Pointer to function
+ *  @param aParam - Optional parameter, to use in callback functions
  *  @return None
  *  @note aNumber - bits 0..2 = Address, bit 7 = Direction
  */
-void USB_SetCb_Ep(U32 aNumber, USB_CbEp pCbEp)
+void USB_SetCb_Ep(U32 aNumber, USB_CbEp pCbEp, U32 aParam)
 {
   U32 num = (aNumber & USB_EP_NUM_MASK);
+
+  /* Store the parameter */
+  USB_EpCfg[num].Param = aParam;
 
   if (0 != (aNumber & USB_EP_DIR_MASK))
   {
@@ -386,16 +390,9 @@ void USB_Configure(U32 aConfig)
  *  @param aAddress - Endpoint address
  *  @param aMaxPacketSize - Maximum packet size
  *  @param aAttributes - Endpoint attributes
- *  @param aParam - Optional parameter, to use in callback functions
  *  @return None
  */
-void USB_EpConfigure
-(
-  U8 aAddress,
-  U16 aMaxPacketSize,
-  USB_EP_TYPE aType,
-  U32 aParam
-)
+void USB_EpConfigure(U8 aAddress, U16 aMaxPacketSize, USB_EP_TYPE aType)
 {
   /* Double Buffering is not yet supported */
   U32 num, val;
@@ -428,9 +425,6 @@ void USB_EpConfigure
     }
   }
   gEpFreeBuffAddr += val;
-
-  /* Store the parameter */
-  USB_EpCfg[num].Param = aParam;
 
   val = (aType << USB_EP_TYPE_MASK_Pos) & USB_EP_TYPE_MASK;
   val |= num;
