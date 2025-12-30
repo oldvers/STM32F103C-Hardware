@@ -36,7 +36,7 @@ static EpBuffDescription_p pEpBuffDscr = (EpBuffDescription_p)USB_PMAADDR;
 /* Endpoint Free Buffer Address */
 static U16 gEpFreeBuffAddr                           = 0;
 /* Control Endpoint max packet size */
-static U8  gCtrlEpMaxPacketSize                      = 8;
+static U16 gCtrlEpMaxPacketSize                      = 8;
 /* Callback Functions */
 static USB_CbGeneric     pUSB_CbReset                = NULL;
 static USB_CbGeneric     pUSB_CbSuspend              = NULL;
@@ -71,8 +71,8 @@ static void usb_EpReset(U32 aNumber)
 
 /*----------------------------------------------------------------------------*/
 /** @brief Sets endpoint status
- *  @param aNumber - endpoint number
- *  @param aStatus - new status
+ *  @param aNumber - Endpoint number
+ *  @param aStatus - New status
  *  @return None
  *  @note aNumber - bits 0..2 = Address, bit 7 = Direction
  */
@@ -98,8 +98,8 @@ static void usb_EpSetStatus(U32 aNumber, U32 aStatus)
 
 /*----------------------------------------------------------------------------*/
 /** @brief Sets endpoint status
- *  @param aNumber - endpoint number
- *  @param aStatus - new status
+ *  @param aNumber - Endpoint number
+ *  @param aStatus - New status
  *  @return None
  *  @note aNumber - bits 0..2 = Address, bit 7 = Direction
  */
@@ -182,7 +182,7 @@ void USB_SetCb_Ep(U32 aNumber, USB_CbEp pCbEp, U32 aParam)
  *  @return None
  *  @note Called by the User to initialize USB
  */
-void USB_Init(U32 aCtrlEpMaxPacketSize)
+void USB_Init(U16 aCtrlEpMaxPacketSize)
 {
   for (U32 num = 0; num < USB_EP_QUANTITY; num++)
   {
